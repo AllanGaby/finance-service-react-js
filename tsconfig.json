@@ -18,10 +18,15 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    }    
   }, 
   "include": [
     "src"
-  ]
+  ],
+  "exclude": []
 }
