@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Router } from '@/main/routes'
 
 ReactDOM.render(
-  <h1>Index</h1>,
+  <Router />,
   document.getElementById('main')
 )
