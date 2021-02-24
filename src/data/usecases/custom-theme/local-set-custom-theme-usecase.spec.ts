@@ -1,5 +1,6 @@
 import { LocalSetCustomThemeUseCase } from './local-set-custom-theme-usecase'
 import { mockThemeModel, SaveCustomThemeRepositorySpy } from '@/data/tests/custom-theme'
+import { throwError } from '@/data/tests/test-helper'
 
 type sutTypes = {
   sut: LocalSetCustomThemeUseCase
@@ -21,5 +22,12 @@ describe('LocalSetCustomThemeUseCase', () => {
     const theme = mockThemeModel()
     await sut.setTheme(theme)
     expect(saveCustomThemeRepositorySpy.param).toEqual(theme)
+  })
+
+  test('Deve retornar um Error se o repositório estourar uma exceção', async () => {
+    const { sut, saveCustomThemeRepositorySpy } = makeSut()
+    jest.spyOn(saveCustomThemeRepositorySpy, 'save').mockImplementationOnce(throwError)
+    const promise = sut.setTheme(mockThemeModel())
+    await expect(promise).rejects.toThrow()
   })
 })
