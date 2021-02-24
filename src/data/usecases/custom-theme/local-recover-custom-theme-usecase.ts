@@ -3,9 +3,16 @@ import { ThemeModel } from '@/domain/models/custom-theme'
 import { RecoverCustomThemeRepository } from '@/data/protocols/repositories/custom-theme'
 
 export class LocalRecoverCustomThemeUseCase implements RecoverCustomThemeUseCase {
-  constructor (private readonly recoverCustomThemeRepository: RecoverCustomThemeRepository) {}
+  constructor (
+    private readonly recoverCustomThemeRepository: RecoverCustomThemeRepository,
+    private readonly defaultTheme: ThemeModel
+  ) {}
 
   async getTheme (): Promise< ThemeModel> {
-    return await this.recoverCustomThemeRepository.get()
+    const theme = await this.recoverCustomThemeRepository.get()
+    if (theme) {
+      return theme
+    }
+    return this.defaultTheme
   }
 }
