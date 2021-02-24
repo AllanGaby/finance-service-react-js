@@ -30,4 +30,10 @@ describe('LocalSetCustomThemeUseCase', () => {
     const promise = sut.setTheme(mockThemeModel())
     await expect(promise).rejects.toThrow()
   })
+
+  test('Deve retornar o thema salvo se o repositório salvar o thema com sucesso', async () => {
+    const { sut, saveCustomThemeRepositorySpy } = makeSut()
+    const thema = await sut.setTheme(mockThemeModel())
+    expect(thema).toEqual(saveCustomThemeRepositorySpy.result)
+  })
 })
