@@ -2,6 +2,10 @@ module.exports = {
   roots: ['<rootDir>/src'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{ts,tsx}',
+    '!**/protocols/**',
+    '!**/tests/**',
+    '!**/index.{ts,tsx}',
+    '!**/*.styles.ts',
     '!**/*.d.ts'
   ],
   coverageDirectory: 'coverage',
