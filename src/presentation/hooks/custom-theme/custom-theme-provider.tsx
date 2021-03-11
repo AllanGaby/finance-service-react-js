@@ -1,7 +1,7 @@
 import React, { createContext, PropsWithChildren, useContext, useState, useCallback, useEffect } from 'react'
 import { RecoverCustomThemeUseCase, SetCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
-import { ThemeProvider } from 'styled-components'
-import { DarkTheme } from '@/presentation/styles/themes'
+import { ThemeProvider, DefaultTheme } from 'styled-components'
+import { DarkTheme, LightTheme } from '@/presentation/styles/themes'
 
 type CustomThemeContextData = {
   customTheme: ThemeModel
@@ -22,11 +22,17 @@ type CustomThemeProviderPropsWithChildren = PropsWithChildren<CustomThemeProvide
 
 const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ getThemeUseCase, setThemeUseCase, children }: CustomThemeProviderPropsWithChildren) => {
   const [customTheme, setCustomThemeState] = useState<ThemeModel>()
+  const [theme, setTheme] = useState<DefaultTheme>()
 
   useEffect(() => {
     const getCustomThemeStateAsync = async (): Promise<void> => {
       const theme = await getThemeUseCase.getTheme()
       setCustomThemeState(theme)
+      if (theme === ThemeModel.dark) {
+        setTheme(DarkTheme)
+      } else {
+        setTheme(LightTheme)
+      }
     }
     getCustomThemeStateAsync()
   }, [])
@@ -36,17 +42,20 @@ const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ g
     if (selectedTheme === ThemeModel.dark) {
       setCustomThemeState(ThemeModel.light)
       await setThemeUseCase.setTheme(ThemeModel.light)
+      setTheme(LightTheme)
     } else {
       setCustomThemeState(ThemeModel.dark)
       await setThemeUseCase.setTheme(ThemeModel.dark)
+      setTheme(DarkTheme)
     }
   }, [])
 
   return (
     <CustomThemeContext.Provider value={{ customTheme, toggleTheme: handleToggleTheme }}>
-      <ThemeProvider theme={DarkTheme} >
+      {theme &&
+      <ThemeProvider theme={theme} >
         {children}
-      </ThemeProvider>
+      </ThemeProvider>}
     </CustomThemeContext.Provider>)
 }
 
