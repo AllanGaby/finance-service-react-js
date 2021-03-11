@@ -1,14 +1,16 @@
-import React, { createContext, PropsWithChildren, useContext, useState, useCallback } from 'react'
+import React, { createContext, PropsWithChildren, useContext, useState, useCallback, useEffect } from 'react'
 import { RecoverCustomThemeUseCase, SetCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
+import { ThemeProvider } from 'styled-components'
+import { DarkTheme } from '@/presentation/styles/themes'
 
 type CustomThemeContextData = {
   customTheme: ThemeModel
-  setCustomTheme: (theme: ThemeModel) => void
+  toggleTheme: () => void
 }
 
 const CustomThemeContext = createContext<CustomThemeContextData>({
   customTheme: undefined,
-  setCustomTheme: undefined
+  toggleTheme: undefined
 })
 
 type CustomThemeProviderProps = {
@@ -21,14 +23,30 @@ type CustomThemeProviderPropsWithChildren = PropsWithChildren<CustomThemeProvide
 const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ getThemeUseCase, setThemeUseCase, children }: CustomThemeProviderPropsWithChildren) => {
   const [customTheme, setCustomThemeState] = useState<ThemeModel>()
 
-  const handleSetCustomTheme = useCallback(async (theme: ThemeModel) => {
-    setCustomThemeState(theme)
-    await setThemeUseCase.setTheme(theme)
+  useEffect(() => {
+    const getCustomThemeStateAsync = async (): Promise<void> => {
+      const theme = await getThemeUseCase.getTheme()
+      setCustomThemeState(theme)
+    }
+    getCustomThemeStateAsync()
+  }, [])
+
+  const handleToggleTheme = useCallback(async () => {
+    const selectedTheme = await getThemeUseCase.getTheme()
+    if (selectedTheme === ThemeModel.dark) {
+      setCustomThemeState(ThemeModel.light)
+      await setThemeUseCase.setTheme(ThemeModel.light)
+    } else {
+      setCustomThemeState(ThemeModel.dark)
+      await setThemeUseCase.setTheme(ThemeModel.dark)
+    }
   }, [])
 
   return (
-    <CustomThemeContext.Provider value={{ customTheme, setCustomTheme: handleSetCustomTheme }}>
-      {children}
+    <CustomThemeContext.Provider value={{ customTheme, toggleTheme: handleToggleTheme }}>
+      <ThemeProvider theme={DarkTheme} >
+        {children}
+      </ThemeProvider>
     </CustomThemeContext.Provider>)
 }
 
