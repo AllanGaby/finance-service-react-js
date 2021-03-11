@@ -71,10 +71,18 @@ describe('LocalStorageRepository', () => {
 
     test('Should return same value that getItem returns', async () => {
       const { sut } = makeSut()
-      const valor = faker.random.objectElement<object>()
-      jest.spyOn(localStorage, 'getItem').mockImplementationOnce((key: string) => { return JSON.stringify(valor) })
+      const value = faker.random.objectElement<object>()
+      jest.spyOn(localStorage, 'getItem').mockImplementationOnce((key: string) => { return JSON.stringify(value) })
       const result = await sut.recover(faker.random.uuid())
-      expect(result).toEqual(valor)
+      expect(result).toEqual(value)
+    })
+
+    test('Should return string if parse is fails', async () => {
+      const { sut } = makeSut()
+      const value = faker.random.uuid()
+      jest.spyOn(localStorage, 'getItem').mockImplementationOnce((key: string) => { return value })
+      const result = await sut.recover(faker.random.uuid())
+      expect(result).toEqual(value)
     })
   })
 })
