@@ -1,6 +1,6 @@
-import { LocalSetCustomThemeUseCase } from './local-set-custom-theme-usecase'
-import { mockThemeModel, SaveCustomThemeRepositorySpy } from '@/data/tests/custom-theme'
-import { throwError } from '@/data/tests/test-helper'
+import { LocalSetCustomThemeUseCase } from './local-set-custom-theme-use-case'
+import { mockThemeModel, SaveCustomThemeRepositorySpy } from '@/data/custom-theme/mocks'
+import { throwError } from '@/data/common/helpers'
 
 type sutTypes = {
   sut: LocalSetCustomThemeUseCase
@@ -17,21 +17,21 @@ const makeSut = (): sutTypes => {
 }
 
 describe('LocalSetCustomThemeUseCase', () => {
-  test('Deve chamar o repositório com o valor correto', async () => {
+  test('Should call SaveCustomThemeRepository with correct value', async () => {
     const { sut, saveCustomThemeRepositorySpy } = makeSut()
     const theme = mockThemeModel()
     await sut.setTheme(theme)
     expect(saveCustomThemeRepositorySpy.param).toEqual(theme)
   })
 
-  test('Deve retornar um Error se o repositório estourar uma exceção', async () => {
+  test('Should return a exception if SaveCustomThemeRepository throws a exception', async () => {
     const { sut, saveCustomThemeRepositorySpy } = makeSut()
     jest.spyOn(saveCustomThemeRepositorySpy, 'save').mockImplementationOnce(throwError)
     const promise = sut.setTheme(mockThemeModel())
     await expect(promise).rejects.toThrow()
   })
 
-  test('Deve retornar o thema salvo se o repositório salvar o thema com sucesso', async () => {
+  test('Should return same theme provide if SaveCustomThemeRepository succeeds', async () => {
     const { sut, saveCustomThemeRepositorySpy } = makeSut()
     const thema = await sut.setTheme(mockThemeModel())
     expect(thema).toEqual(saveCustomThemeRepositorySpy.result)

@@ -1,4 +1,4 @@
-import { ThemeModel } from '@/domain/models/custom-theme'
+import { ThemeModel } from '@/domain/custom-theme'
 
 export interface SaveCustomThemeRepository {
   save: (theme: ThemeModel) => Promise<ThemeModel>

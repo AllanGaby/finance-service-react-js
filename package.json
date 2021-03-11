@@ -1,11 +1,13 @@
 {
-  "name": "front-react-ts-clean-identity",
+  "name": "react-ts-skeleton",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Allan Gaby <allan.gaby@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev:server": "webpack serve --config webpack.config.js --open",
+    "build": "webpack --config webpack.production.js",
+    "dev:server": "webpack serve --config webpack.development.js --open",
+    "sonar:scanner": "npm run test:ci && sonar-scanner",
     "test": "jest --passWithNoTests --no-cache --runInBand --noStackTrace",
     "test:watch": "yarn test --watch",
     "test:staged": "yarn test",
@@ -14,6 +16,7 @@
   "devDependencies": {
     "@types/faker": "^5.1.7",
     "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.33",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "@types/react-router-dom": "^5.1.7",
@@ -29,10 +32,13 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-standard": "^5.0.0",
     "git-commit-msg-linter": "^3.0.0",
+    "html-webpack-plugin": "^5.3.1",
     "husky": "^5.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.6.3",
+    "jest-sonar-reporter": "^2.0.0",
     "lint-staged": "^10.5.4",
+    "sonarqube-scanner": "^2.8.0",
     "ts-jest": "^26.5.1",
     "ts-loader": "^8.0.17",
     "typescript": "^4.1.5",
@@ -40,8 +46,12 @@
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
+  },
   "dependencies": {
-    "@types/node": "^14.14.31",
     "faker": "^5.4.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

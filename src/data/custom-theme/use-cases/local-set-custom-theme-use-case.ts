@@ -1,6 +1,5 @@
-import { SetCustomThemeUseCase } from '@/domain/usecases/custom-theme'
-import { ThemeModel } from '@/domain/models/custom-theme'
-import { SaveCustomThemeRepository } from '@/data/protocols/repositories/custom-theme'
+import { SetCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
+import { SaveCustomThemeRepository } from '@/data/custom-theme/repositories'
 
 export class LocalSetCustomThemeUseCase implements SetCustomThemeUseCase {
   constructor (private readonly saveCustomThemeRepository: SaveCustomThemeRepository) {}

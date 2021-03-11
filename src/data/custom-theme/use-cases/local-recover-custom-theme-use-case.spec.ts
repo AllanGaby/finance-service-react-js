@@ -1,7 +1,7 @@
-import { LocalRecoverCustomThemeUseCase } from './local-recover-custom-theme-usecase'
-import { RecoverCustomThemeRepositoryStub } from '@/data/tests/custom-theme'
-import { throwError } from '@/data/tests/test-helper'
-import { ThemeModel } from '@/domain/models/custom-theme'
+import { LocalRecoverCustomThemeUseCase } from './local-recover-custom-theme-use-case'
+import { RecoverCustomThemeRepositoryStub } from '@/data/custom-theme/mocks'
+import { throwError } from '@/data/common/helpers'
+import { ThemeModel } from '@/domain/custom-theme'
 import faker from 'faker'
 
 type sutTypes = {
@@ -22,28 +22,28 @@ const makeSut = (): sutTypes => {
 }
 
 describe('LocalRecoverCustomThemeUseCase', () => {
-  test('Deve chamar o repositório', async () => {
+  test('Should call RecoverCustomThemeRepository with correct value', async () => {
     const { sut, recoverCustomThemeRepositoryStub } = makeSut()
     const getThemeSpyon = jest.spyOn(recoverCustomThemeRepositoryStub, 'get')
     await sut.getTheme()
     expect(getThemeSpyon).toHaveBeenCalled()
   })
 
-  test('Deve retornar um Error se o repositório estourar uma exceção', async () => {
+  test('Should return a exception if SaveCustomThemeRepository throws a exception', async () => {
     const { sut, recoverCustomThemeRepositoryStub } = makeSut()
     jest.spyOn(recoverCustomThemeRepositoryStub, 'get').mockImplementationOnce(throwError)
     const promise = sut.getTheme()
     await expect(promise).rejects.toThrow()
   })
 
-  test('Deve retornar o defaultTheme se o repositório não encontrar um thema', async () => {
+  test('Should return defaultTheme if theme if not found', async () => {
     const { sut, recoverCustomThemeRepositoryStub, defaultTheme } = makeSut()
     recoverCustomThemeRepositoryStub.result = undefined
     const thema = await sut.getTheme()
     expect(thema).toEqual(defaultTheme)
   })
 
-  test('Deve retornar um thema se o repositório encontrar um thema', async () => {
+  test('Should return same theme that RecoverCustomThemeRepository returns', async () => {
     const { sut, recoverCustomThemeRepositoryStub } = makeSut()
     const thema = await sut.getTheme()
     expect(thema).toEqual(recoverCustomThemeRepositoryStub.result)

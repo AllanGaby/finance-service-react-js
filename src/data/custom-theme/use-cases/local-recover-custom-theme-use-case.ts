@@ -1,6 +1,5 @@
-import { RecoverCustomThemeUseCase } from '@/domain/usecases/custom-theme'
-import { ThemeModel } from '@/domain/models/custom-theme'
-import { RecoverCustomThemeRepository } from '@/data/protocols/repositories/custom-theme'
+import { RecoverCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
+import { RecoverCustomThemeRepository } from '@/data/custom-theme/repositories'
 
 export class LocalRecoverCustomThemeUseCase implements RecoverCustomThemeUseCase {
   constructor (

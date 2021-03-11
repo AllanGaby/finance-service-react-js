@@ -1,6 +1,6 @@
-import { SaveCustomThemeRepository, RecoverCustomThemeRepository } from '@/data/protocols/repositories/custom-theme'
-import { ThemeModel } from '@/domain/models/custom-theme'
-import { mockThemeModel } from './mock-custom-theme'
+import { SaveCustomThemeRepository, RecoverCustomThemeRepository } from '@/data/custom-theme/repositories'
+import { ThemeModel } from '@/domain/custom-theme'
+import { mockThemeModel } from './custom-theme-mock'
 
 export class SaveCustomThemeRepositorySpy implements SaveCustomThemeRepository {
   param: ThemeModel
