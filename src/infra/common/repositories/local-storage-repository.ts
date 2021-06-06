@@ -1,15 +1,16 @@
-import { SaveLocalStorageRepository, SaveLocalStorageDTO, RecoverLocalStorageRepository } from '@/data/common/repositories'
+import { SetValueRepository, RecoverValueRepository } from '@/domain/common'
 
-export class LocalStorageRepository implements SaveLocalStorageRepository, RecoverLocalStorageRepository {
-  async save<RecordType = any>({ key, record }: SaveLocalStorageDTO<RecordType>): Promise<RecordType> {
-    if (!record) {
-      localStorage.removeItem(key)
+export class LocalStorageRepository<ValueType> implements SetValueRepository<ValueType>, RecoverValueRepository<ValueType> {
+  async set (key: string, value: ValueType): Promise<ValueType> {
+    if (value) {
+      localStorage.setItem(key, JSON.stringify(value))
+      return value
     }
-    localStorage.setItem(key, JSON.stringify(record))
-    return record
+    localStorage.removeItem(key)
+    return undefined
   }
 
-  async recover<RecordType = any>(key: string): Promise<RecordType | string> {
+  async recover (key: string): Promise<ValueType | string> {
     const result = localStorage.getItem(key)
     if (result) {
       try {

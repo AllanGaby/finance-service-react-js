@@ -6,10 +6,14 @@ import { CustomThemeProvider } from '@/presentation/hooks/custom-theme'
 import { makeSetCustomThemeUseCase, makeRecoverCustomThemeUseCase } from '@/main/factories/custom-theme/use-cases'
 
 const Router: React.FC = () => {
+  const themeKey: string = '@skeleton:theme'
+
   return (
     <CustomThemeProvider
       setThemeUseCase={makeSetCustomThemeUseCase()}
-      getThemeUseCase={makeRecoverCustomThemeUseCase()} >
+      getThemeUseCase={makeRecoverCustomThemeUseCase()}
+      themeKey={themeKey}
+    >
       <BrowserRouter>
         <GlobalStyle />
         <OpenningRouter />

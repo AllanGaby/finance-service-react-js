@@ -1,7 +1,10 @@
-import { RecoverCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
-import { LocalRecoverCustomThemeUseCase } from '@/data/custom-theme/use-cases'
-import { makeRecoverCustomThemeRepository } from '@/main/factories/custom-theme/repositories'
+import { RecoverValueInRepositoryUseCase } from '@/domain/common'
+import { LocalRecoverValueInRepositoryUseCase } from '@/data/common/use-cases'
+import { LocalStorageRepository } from '@/infra/common/repositories'
+import { ThemeModel } from '@/domain/custom-theme'
 
-export const makeRecoverCustomThemeUseCase = (): RecoverCustomThemeUseCase => {
-  return new LocalRecoverCustomThemeUseCase(makeRecoverCustomThemeRepository('custom-theme'), ThemeModel.dark)
+export const makeRecoverCustomThemeUseCase = (): RecoverValueInRepositoryUseCase<ThemeModel> => {
+  return new LocalRecoverValueInRepositoryUseCase<ThemeModel>(
+    new LocalStorageRepository<ThemeModel>()
+  )
 }

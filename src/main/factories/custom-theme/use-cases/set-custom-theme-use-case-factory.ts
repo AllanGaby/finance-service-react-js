@@ -1,7 +1,10 @@
-import { SetCustomThemeUseCase } from '@/domain/custom-theme'
-import { LocalSetCustomThemeUseCase } from '@/data/custom-theme/use-cases'
-import { makeSaveCustomThemeRepository } from '@/main/factories/custom-theme/repositories'
+import { SetValueInRepositoryUseCase } from '@/domain/common'
+import { LocalSetValueInRepositoryUseCase } from '@/data/common/use-cases'
+import { LocalStorageRepository } from '@/infra/common/repositories'
+import { ThemeModel } from '@/domain/custom-theme'
 
-export const makeSetCustomThemeUseCase = (): SetCustomThemeUseCase => {
-  return new LocalSetCustomThemeUseCase(makeSaveCustomThemeRepository('custom-theme'))
+export const makeSetCustomThemeUseCase = (): SetValueInRepositoryUseCase<ThemeModel> => {
+  return new LocalSetValueInRepositoryUseCase<ThemeModel>(
+    new LocalStorageRepository<ThemeModel>()
+  )
 }

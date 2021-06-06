@@ -1,5 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext, useState, useCallback, useEffect } from 'react'
-import { RecoverCustomThemeUseCase, SetCustomThemeUseCase, ThemeModel } from '@/domain/custom-theme'
+import { ThemeModel } from '@/domain/custom-theme'
+import { SetValueInRepositoryUseCase, RecoverValueInRepositoryUseCase } from '@/domain/common'
 import { ThemeProvider, DefaultTheme } from 'styled-components'
 import { DarkTheme, LightTheme } from '@/presentation/styles/themes'
 
@@ -14,19 +15,20 @@ const CustomThemeContext = createContext<CustomThemeContextData>({
 })
 
 type CustomThemeProviderProps = {
-  setThemeUseCase: SetCustomThemeUseCase
-  getThemeUseCase: RecoverCustomThemeUseCase
+  setThemeUseCase: SetValueInRepositoryUseCase<ThemeModel>
+  getThemeUseCase: RecoverValueInRepositoryUseCase<ThemeModel>
+  themeKey: string
 }
 
 type CustomThemeProviderPropsWithChildren = PropsWithChildren<CustomThemeProviderProps>
 
-const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ getThemeUseCase, setThemeUseCase, children }: CustomThemeProviderPropsWithChildren) => {
+const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ getThemeUseCase, setThemeUseCase, themeKey, children }: CustomThemeProviderPropsWithChildren) => {
   const [customTheme, setCustomThemeState] = useState<ThemeModel>()
   const [theme, setTheme] = useState<DefaultTheme>()
 
   useEffect(() => {
     const getCustomThemeStateAsync = async (): Promise<void> => {
-      const theme = await getThemeUseCase.getTheme()
+      const theme = await getThemeUseCase.recoverValue(themeKey) as ThemeModel
       setCustomThemeState(theme)
       if (theme === ThemeModel.dark) {
         setTheme(DarkTheme)
@@ -38,14 +40,14 @@ const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ g
   }, [])
 
   const handleToggleTheme = useCallback(async () => {
-    const selectedTheme = await getThemeUseCase.getTheme()
+    const selectedTheme = await getThemeUseCase.recoverValue(themeKey) as ThemeModel
     if (selectedTheme === ThemeModel.dark) {
       setCustomThemeState(ThemeModel.light)
-      await setThemeUseCase.setTheme(ThemeModel.light)
+      await setThemeUseCase.setValue(themeKey, ThemeModel.light)
       setTheme(LightTheme)
     } else {
       setCustomThemeState(ThemeModel.dark)
-      await setThemeUseCase.setTheme(ThemeModel.dark)
+      await setThemeUseCase.setValue(themeKey, ThemeModel.dark)
       setTheme(DarkTheme)
     }
   }, [])

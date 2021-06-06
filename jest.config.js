@@ -6,7 +6,9 @@ module.exports = {
     '!**/routes/**',
     '!**/hooks/**',
     '!**/protocols/**',
-    '!**/tests/**',
+    '!**/entities/**',
+    '!**/errors/**',
+    '!**/mocks/**',
     '!**/index.{ts,tsx}',
     '!**/*.styles.ts',
     '!**/*.d.ts'

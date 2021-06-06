@@ -1,22 +1,15 @@
 import { LocalStorageRepository } from './local-storage-repository'
-import { SaveLocalStorageDTO } from '@/data/common/repositories'
-import { throwError } from '@/data/common/helpers'
 import 'jest-localstorage-mock'
 import faker from 'faker'
 
 type sutTypes = {
-  sut: LocalStorageRepository
+  sut: LocalStorageRepository<object>
+  key: string
 }
 
-const makeSut = (): sutTypes => {
-  return {
-    sut: new LocalStorageRepository()
-  }
-}
-
-const mockSaveLocalStorageDTO = (): SaveLocalStorageDTO<object> => ({
-  key: faker.random.uuid(),
-  record: faker.random.objectElement<object>()
+const makeSut = (): sutTypes => ({
+  sut: new LocalStorageRepository<object>(),
+  key: faker.random.uuid()
 })
 
 describe('LocalStorageRepository', () => {
@@ -24,64 +17,51 @@ describe('LocalStorageRepository', () => {
     localStorage.clear()
   })
 
-  describe('Save', () => {
-    test('Should call setItem with correct value', async () => {
-      const { sut } = makeSut()
-      const saveLocalStorageDTO = mockSaveLocalStorageDTO()
-      await sut.save(saveLocalStorageDTO)
-      expect(localStorage.setItem).toHaveBeenCalledWith(saveLocalStorageDTO.key, JSON.stringify(saveLocalStorageDTO.record))
-    })
-
-    test('Should call removeItem if value is undefined', async () => {
-      const { sut } = makeSut()
-      const saveLocalStorageDTO = mockSaveLocalStorageDTO()
-      saveLocalStorageDTO.record = undefined
-      await sut.save(saveLocalStorageDTO)
-      expect(localStorage.removeItem).toHaveBeenCalledWith(saveLocalStorageDTO.key)
-    })
-
-    test('Should return a exception if setItem throws a exception', async () => {
-      const { sut } = makeSut()
-      jest.spyOn(localStorage, 'setItem').mockImplementationOnce(throwError)
-      const promise = sut.save(mockSaveLocalStorageDTO())
-      await expect(promise).rejects.toThrow()
-    })
-
-    test('Should return new record if setItem is succeeds', async () => {
-      const { sut } = makeSut()
-      const saveLocalStorageDTO = mockSaveLocalStorageDTO()
-      const record = await sut.save(saveLocalStorageDTO)
-      expect(record).toEqual(saveLocalStorageDTO.record)
-    })
-  })
-
-  describe('Recover', () => {
-    test('Should call getItem with correct value', async () => {
-      const { sut } = makeSut()
-      const key = faker.random.uuid()
-      await sut.recover(key)
-      expect(localStorage.getItem).toHaveBeenCalledWith(key)
-    })
-
-    test('Should return undefined if key is not found', async () => {
-      const { sut } = makeSut()
-      const result = await sut.recover(faker.random.uuid())
-      expect(result).toBeFalsy()
-    })
-
-    test('Should return same value that getItem returns', async () => {
-      const { sut } = makeSut()
+  describe('Set Method', () => {
+    test('Should call setItem with correct value if value is provided', async () => {
+      const { sut, key } = makeSut()
+      const setItemSpy = jest.spyOn(localStorage, 'setItem')
       const value = faker.random.objectElement<object>()
-      jest.spyOn(localStorage, 'getItem').mockImplementationOnce((key: string) => { return JSON.stringify(value) })
-      const result = await sut.recover(faker.random.uuid())
+      await sut.set(key, value)
+      expect(setItemSpy).toHaveBeenCalledWith(key, JSON.stringify(value))
+    })
+
+    test('Should return same value provided if setItem is succeeds', async () => {
+      const { sut, key } = makeSut()
+      const value = faker.random.objectElement<object>()
+      const result = await sut.set(key, value)
       expect(result).toEqual(value)
     })
 
-    test('Should return string if parse is fails', async () => {
-      const { sut } = makeSut()
-      const value = faker.random.uuid()
-      jest.spyOn(localStorage, 'getItem').mockImplementationOnce((key: string) => { return value })
-      const result = await sut.recover(faker.random.uuid())
+    test('Should call removeItem if value is undefined', async () => {
+      const { sut, key } = makeSut()
+      const removeItemSpy = jest.spyOn(localStorage, 'removeItem')
+      await sut.set(key, undefined)
+      expect(removeItemSpy).toHaveBeenCalledWith(key)
+    })
+  })
+
+  describe('Recover Value', () => {
+    test('Should call getItem with correct key', async () => {
+      const { sut, key } = makeSut()
+      const getItemSpy = jest.spyOn(localStorage, 'getItem')
+      await sut.recover(key)
+      expect(getItemSpy).toHaveBeenCalledWith(key)
+    })
+
+    test('Should return same value of LocalStorage return', async () => {
+      const { sut, key } = makeSut()
+      const value = faker.random.objectElement<object>()
+      jest.spyOn(localStorage, 'getItem').mockReturnValue(JSON.stringify(value))
+      const result = await sut.recover(key)
+      expect(result).toEqual(value)
+    })
+
+    test('Should return string if of LocalStorage dont can cast the value', async () => {
+      const { sut, key } = makeSut()
+      const value = faker.random.words()
+      jest.spyOn(localStorage, 'getItem').mockReturnValue(value)
+      const result = await sut.recover(key)
       expect(result).toEqual(value)
     })
   })
