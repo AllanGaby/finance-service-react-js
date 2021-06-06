@@ -29,11 +29,16 @@ const CustomThemeProvider: React.FC<CustomThemeProviderPropsWithChildren> = ({ g
   useEffect(() => {
     const getCustomThemeStateAsync = async (): Promise<void> => {
       const theme = await getThemeUseCase.recoverValue(themeKey) as ThemeModel
-      setCustomThemeState(theme)
-      if (theme === ThemeModel.dark) {
-        setTheme(DarkTheme)
+      if (theme) {
+        setCustomThemeState(theme)
+        if (theme === ThemeModel.dark) {
+          setTheme(DarkTheme)
+        } else {
+          setTheme(LightTheme)
+        }
       } else {
-        setTheme(LightTheme)
+        await setThemeUseCase.setValue(themeKey, ThemeModel.dark)
+        setTheme(DarkTheme)
       }
     }
     getCustomThemeStateAsync()
