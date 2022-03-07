@@ -7,13 +7,15 @@
   "scripts": {
     "build": "webpack --config webpack.production.js",
     "dev:server": "webpack serve --config webpack.development.js --open",
-    "sonar:scanner": "npm run test:ci && sonar-scanner",
+    "sonar:scanner": "npm run test:ci && npx sonar-scanner -Dsonar.host.url=$SONAR_HOST -Dsonar.projectKey=REACT-TS-SKELETON",
     "test": "jest --passWithNoTests --no-cache --runInBand --noStackTrace",
     "test:watch": "yarn test --watch",
     "test:staged": "yarn test",
     "test:ci": "yarn test --coverage"
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/faker": "^5.1.7",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.33",
@@ -24,6 +26,7 @@
     "@types/typescript": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^10.2.4",
     "eslint": "^7.20.0",
     "eslint-config-standard-with-typescript": "^19.0.1",
     "eslint-plugin-import": "^2.22.1",
@@ -53,7 +56,10 @@
     "indent": 4
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "faker": "^5.4.0",
+    "joi": "^17.6.0",
+    "joi-translation-pt-br": "^0.0.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",

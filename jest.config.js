@@ -9,6 +9,8 @@ module.exports = {
     '!**/entities/**',
     '!**/errors/**',
     '!**/mocks/**',
+    '!**/*.factory.{ts,tsx}',
+    '!**/*.setup.{ts,tsx}',
     '!**/index.{ts,tsx}',
     '!**/*.styles.ts',
     '!**/*.d.ts'

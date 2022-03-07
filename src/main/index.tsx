@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router } from '@/main/routes'
+import { AppSetupFactory } from '@/main/application/setup'
 
 ReactDOM.render(
-  <Router />,
+  <AppSetupFactory />,
   document.getElementById('main')
 )

@@ -10,8 +10,8 @@ module.exports = merge(common(), {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './template.production.html',
-      favicon: './assets/favicon.png'
+      template: './src/presentation/common/templates/production.html',
+      favicon: './src/assets/images/common/favicon.png'
     })
   ]
 })
