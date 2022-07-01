@@ -1,19 +1,19 @@
 import { RemoteUpdateEntityByIdUseCase } from './remote-update-entity-by-id.use-case'
 import { EntityModel, mockEntityModel } from '@/domain/common'
-import { HttpMethod, HttpStatusCode, HttpClientSpy, mockHttpResponse, mockHttpMethod, mockErrorStatusCode } from '@/protocols/http-client'
+import { HttpMethod, HttpStatusCode, HttpClientProtocolSpy, mockHttpResponse, mockHttpMethod, mockErrorStatusCode } from '@/protocols/http-client'
 import { UnauthorizedError, UnexpectedError, UnprocessableEntityError, EntityNotFoundError, ConflictError } from '@/data/common/errors'
 import { internet, database, datatype } from 'faker'
 
 type sutTypes = {
   sut: RemoteUpdateEntityByIdUseCase<EntityModel, EntityModel>
-  httpClient: HttpClientSpy
+  httpClient: HttpClientProtocolSpy
   endPoint: string
   entityName: string
   entityId: string
 }
 
 const makeSut = (method: HttpMethod): sutTypes => {
-  const httpClient = new HttpClientSpy()
+  const httpClient = new HttpClientProtocolSpy()
   httpClient.httpResponse = mockHttpResponse(HttpStatusCode.ok)
   const endPoint = internet.url()
   const entityName = database.column()

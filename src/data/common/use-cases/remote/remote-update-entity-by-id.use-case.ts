@@ -1,11 +1,11 @@
 import { UpdateEntityByIdUseCase, EntityModel } from '@/domain/common'
-import { HttpClient, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { UnauthorizedError, UnexpectedError, UnprocessableEntityError, EntityNotFoundError, ConflictError } from '@/data/common/errors'
 
 export class RemoteUpdateEntityByIdUseCase<UpdateEntityDTO, EntityType extends EntityModel> implements UpdateEntityByIdUseCase<UpdateEntityDTO, EntityType> {
   constructor (
     protected endPoint: string,
-    private readonly httpClient: HttpClient,
+    private readonly httpClient: HttpClientProtocol,
     private readonly entityName: string,
     private readonly httpMethod: HttpMethod = HttpMethod.put
   ) {}

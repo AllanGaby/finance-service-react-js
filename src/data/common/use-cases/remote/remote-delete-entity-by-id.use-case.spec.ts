@@ -1,18 +1,18 @@
 import { RemoteDeleteEntityByIdUseCase } from './remote-delete-entity-by-id.use-case'
 import { EntityModel, mockEntityModel } from '@/domain/common'
-import { HttpMethod, HttpStatusCode, HttpClientSpy, mockErrorStatusCode, mockHttpResponse } from '@/protocols/http-client'
+import { HttpMethod, HttpStatusCode, HttpClientProtocolSpy, mockErrorStatusCode, mockHttpResponse } from '@/protocols/http-client'
 import { ConflictError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 import { datatype, internet, database } from 'faker'
 
 type sutTypes = {
   sut: RemoteDeleteEntityByIdUseCase<EntityModel, EntityModel>
-  httpClient: HttpClientSpy
+  httpClient: HttpClientProtocolSpy
   endPoint: string
   entityName: string
 }
 
 const makeSut = (): sutTypes => {
-  const httpClient = new HttpClientSpy()
+  const httpClient = new HttpClientProtocolSpy()
   httpClient.httpResponse = mockHttpResponse(HttpStatusCode.noContent)
   const endPoint = internet.url()
   const entityName = database.column()

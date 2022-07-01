@@ -1,5 +1,5 @@
 import { ListEntitiesDTO } from '@/domain/common'
-import { CommonServiceDTO } from '@/presentation/common/hooks'
+import { CommonServiceDTO } from '@/presentation/common'
 
 export type ListServiceDTO = CommonServiceDTO & {
   filter: ListEntitiesDTO

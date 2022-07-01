@@ -1,8 +1,8 @@
 import { MapFilterToURLParamsUseCase } from '@/domain/common'
-import { HttpClient } from '@/protocols/http-client'
+import { HttpClientProtocol } from '@/protocols/http-client'
 
 export type ServiceProviderModel = {
-  httpClient: HttpClient
+  httpClient: HttpClientProtocol
   mapFilterToURLParamsUseCase: MapFilterToURLParamsUseCase
   baseUrl: string
 }

@@ -1,18 +1,18 @@
 import { RemoteCreateEntityUseCase } from './remote-create-entity.use-case'
 import { EntityModel, mockEntityModel } from '@/domain/common'
-import { HttpMethod, HttpStatusCode, HttpClientSpy, mockErrorStatusCode, mockHttpResponse } from '@/protocols/http-client'
+import { HttpMethod, HttpStatusCode, HttpClientProtocolSpy, mockErrorStatusCode, mockHttpResponse } from '@/protocols/http-client'
 import { ConflictError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 import { internet, database } from 'faker'
 
 type sutTypes = {
   sut: RemoteCreateEntityUseCase<EntityModel, EntityModel>
-  httpClient: HttpClientSpy
+  httpClient: HttpClientProtocolSpy
   endPoint: string
   entityName: string
 }
 
 const makeSut = (): sutTypes => {
-  const httpClient = new HttpClientSpy()
+  const httpClient = new HttpClientProtocolSpy()
   httpClient.httpResponse = mockHttpResponse(HttpStatusCode.created, mockEntityModel())
   const endPoint = internet.url()
   const entityName = database.column()

@@ -1,15 +1,28 @@
-import React, { useMemo } from 'react'
-import { AppRouteModel } from '@/main/application/models'
-import { OpenningRoutes } from '@/main/factories/home/routes'
+import React, { useCallback, useMemo } from 'react'
+import { AppRouteModel } from '@/main/application'
+import { OpenningRoutes } from '@/main/factories/home'
+import { FinanceRoutes } from '@/main/factories/finance'
+import { Menu, useAuthentication } from '@/presentation/common'
 import { BrowserRouter, Switch } from 'react-router-dom'
-import { Redirect, Route } from 'react-router'
+import { Route } from 'react-router'
 
 export const RoutesSetupFactory: React.FC = () => {
-  const routes: AppRouteModel[] = [...OpenningRoutes]
+  const routes: AppRouteModel[] = [...OpenningRoutes, ...FinanceRoutes]
+  const { accessSession, hasAccess, loading } = useAuthentication()
+
+  const handleGetRoutes = useCallback(() => {
+    return routes.filter(item => {
+      if (accessSession) {
+        return item.access_rule && hasAccess(item.access_rule)
+      }
+      return !item.access_rule
+    })
+  }, [accessSession, loading])
 
   const handleRoutes = useMemo(() =>
+    !loading &&
     <>
-      {routes.map((route, index) =>
+      {handleGetRoutes().map((route, index) =>
         <Route
           key={`${route.path.toString()}-${index}`}
           path={route.path}
@@ -17,20 +30,30 @@ export const RoutesSetupFactory: React.FC = () => {
           component={route.component}/>
       )}
     </>
-  , [])
+  , [accessSession, loading])
 
   const handleOpenRoutesRoutes = useMemo(() =>
-    <>
-      <Switch>
-        {handleRoutes}
-      </Switch>
-      <Redirect to='/home'/>
-    </>
-  , [])
+    !loading &&
+    <Switch>
+      {handleRoutes}
+    </Switch>
+  , [accessSession, loading])
+
+  const handleMenu = useMemo(() =>
+    !loading &&
+    <Menu
+      brandTitle='Finance Service'
+      items={handleGetRoutes().filter(item => item.viewInMenu)}
+    >
+
+      {handleOpenRoutesRoutes}
+
+    </Menu>
+  , [accessSession, loading])
 
   return (
     <BrowserRouter>
-      {handleOpenRoutesRoutes}
+      {handleMenu}
     </BrowserRouter>
   )
 }

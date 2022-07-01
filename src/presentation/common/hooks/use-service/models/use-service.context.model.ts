@@ -4,8 +4,9 @@ import {
   DeleteByIdServiceDTO,
   GetByIdServiceDTO,
   ListServiceDTO,
-  UpdateByIdServiceDTO
-} from '@/presentation/common/hooks'
+  UpdateByIdServiceDTO,
+  DownloadServiceDTO
+} from '@/presentation/common'
 
 export type ServiceContextModel = {
   create: <EntityType extends Object, DTOType>(params: CreateServiceDTO<DTOType>) => Promise<EntityType>
@@ -13,4 +14,5 @@ export type ServiceContextModel = {
   deleteById: <DTOType extends Object>(params: DeleteByIdServiceDTO<DTOType>) => Promise<void>
   getById: <EntityType extends Object>(params: GetByIdServiceDTO) => Promise<EntityType>
   list: <EntityType extends Object>(params: ListServiceDTO) => Promise<ListEntityModel<EntityType>>
+  download: (params: DownloadServiceDTO) => Promise<void>
 }

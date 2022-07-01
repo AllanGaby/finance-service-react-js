@@ -1,6 +1,6 @@
-import { HttpClient, HttpRequest, HttpResponse, mockHttpResponse } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpRequest, HttpResponse, mockHttpResponse } from '@/protocols/http-client'
 
-export class HttpClientSpy implements HttpClient {
+export class HttpClientProtocolSpy implements HttpClientProtocol {
   httpRequest: HttpRequest<any>
   httpResponse: HttpResponse<any> = mockHttpResponse()
 

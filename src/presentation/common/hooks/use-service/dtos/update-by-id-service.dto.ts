@@ -1,5 +1,5 @@
 import { HttpMethod } from '@/protocols/http-client'
-import { CommonServiceDTO } from '@/presentation/common/hooks'
+import { CommonServiceDTO } from '@/presentation/common'
 
 export type UpdateByIdServiceDTO<DTOType> = CommonServiceDTO & {
   data: DTOType

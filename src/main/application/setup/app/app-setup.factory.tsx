@@ -1,18 +1,13 @@
 import React from 'react'
-import { GlobalStyle, DarkTheme } from '@/presentation/common/styles'
-import { RoutesSetupFactory, ProviderSetupFactory } from '@/main/application/setup'
+import { RoutesSetupFactory, ProviderSetupFactory } from '@/main/application'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider } from 'styled-components'
+import { ChakraProvider } from '@chakra-ui/react'
 
-export const AppSetupFactory: React.FC = () => {
-  return (
-    <ThemeProvider theme={DarkTheme}>
-      <BrowserRouter>
-        <GlobalStyle />
-        <ProviderSetupFactory>
-          <RoutesSetupFactory />
-        </ProviderSetupFactory>
-      </BrowserRouter>
-    </ThemeProvider>
-  )
-}
+export const AppSetupFactory: React.FC = () =>
+  <ChakraProvider>
+    <BrowserRouter>
+      <ProviderSetupFactory>
+        <RoutesSetupFactory />
+      </ProviderSetupFactory>
+    </BrowserRouter>
+  </ChakraProvider>

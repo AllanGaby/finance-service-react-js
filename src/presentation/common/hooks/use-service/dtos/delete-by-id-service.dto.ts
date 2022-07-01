@@ -1,4 +1,4 @@
-import { CommonServiceDTO } from '@/presentation/common/hooks'
+import { CommonServiceDTO } from '@/presentation/common'
 
 export type DeleteByIdServiceDTO<DTOType = undefined> = CommonServiceDTO & {
   entityId: string

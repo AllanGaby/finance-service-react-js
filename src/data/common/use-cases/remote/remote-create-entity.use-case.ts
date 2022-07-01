@@ -1,11 +1,11 @@
 import { CreateEntityUseCase, EntityModel } from '@/domain/common'
-import { HttpClient, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { ConflictError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 
 export class RemoteCreateEntityUseCase<CreateEntityDTO, EntityType extends EntityModel> implements CreateEntityUseCase<CreateEntityDTO, EntityType> {
   constructor (
     protected endPoint: string,
-    private readonly httpClient: HttpClient,
+    private readonly httpClient: HttpClientProtocol,
     private readonly entityName: string
   ) {}
 

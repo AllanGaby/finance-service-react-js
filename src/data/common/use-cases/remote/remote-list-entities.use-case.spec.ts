@@ -1,12 +1,12 @@
 import { RemoteListEntitiesUseCase } from './remote-list-entities.use-case'
 import { EntityModel, mockListEntitiesDTO, MapFilterToURLParamsUseCaseSpy, OrderDirection, mockOrderDirection, ListEntitiesDTO } from '@/domain/common'
-import { HttpClientSpy, mockErrorStatusCode, mockHttpResponse, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocolSpy, mockErrorStatusCode, mockHttpResponse, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { UnauthorizedError, UnexpectedError, UnprocessableEntityError, EntityNotFoundError } from '@/data/common/errors'
 import { internet, database, datatype } from 'faker'
 
 type sutTypes = {
   sut: RemoteListEntitiesUseCase<EntityModel>
-  httpClient: HttpClientSpy
+  httpClient: HttpClientProtocolSpy
   endPoint: string
   mapFilterToURLParamsUseCase: MapFilterToURLParamsUseCaseSpy
   entityName: string
@@ -15,7 +15,7 @@ type sutTypes = {
 }
 
 const makeSut = (): sutTypes => {
-  const httpClient = new HttpClientSpy()
+  const httpClient = new HttpClientProtocolSpy()
   httpClient.httpResponse = mockHttpResponse(HttpStatusCode.ok)
   const endPoint = internet.url()
   const mapFilterToURLParamsUseCase = new MapFilterToURLParamsUseCaseSpy()

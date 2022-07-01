@@ -1,11 +1,11 @@
 import { DeleteEntityByIdUseCase, EntityModel } from '@/domain/common'
-import { HttpClient, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { ConflictError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 
 export class RemoteDeleteEntityByIdUseCase<EntityType extends EntityModel, DeleteEntityDTO> implements DeleteEntityByIdUseCase<EntityType, DeleteEntityDTO> {
   constructor (
     protected endPoint: string,
-    private readonly httpClient: HttpClient,
+    private readonly httpClient: HttpClientProtocol,
     private readonly entityName: string
   ) {}
 

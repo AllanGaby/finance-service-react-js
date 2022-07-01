@@ -1,5 +1,5 @@
 import React, { createContext, useContext, PropsWithChildren, useCallback } from 'react'
-import { LocalStorageProviderModel, LocalStorageContextModel } from '@/presentation/common/hooks'
+import { LocalStorageProviderModel, LocalStorageContextModel } from '@/presentation/common'
 
 const LocalStorageContext = createContext<LocalStorageContextModel>({
   addLocalStorageValue: undefined,
@@ -13,13 +13,12 @@ const LocalStorageProvider: React.FC<LocalStorageProviderModelWithChildren> = ({
   recoverValueInStorageUseCase,
   children
 }: LocalStorageProviderModelWithChildren) => {
-  const addLocalStorageValue = useCallback(async <ValueType extends undefined>(key: string, data: ValueType): Promise<ValueType> => {
+  const addLocalStorageValue = useCallback(async <ValueType extends Object>(key: string, data: ValueType): Promise<ValueType> => {
     return setValueInStorageUseCase.setValue<ValueType>(key, data)
   }, [setValueInStorageUseCase])
 
-  const recoverLocalStorageValue = useCallback(async <ValueType extends undefined>(key: string): Promise<ValueType> => {
-    const recoverValue = await recoverValueInStorageUseCase.recoverValue<ValueType>(key)
-    return JSON.parse(recoverValue)
+  const recoverLocalStorageValue = useCallback(async <ValueType extends Object>(key: string): Promise<ValueType> => {
+    return recoverValueInStorageUseCase.recoverValue<ValueType>(key) as unknown as ValueType
   }, [recoverValueInStorageUseCase])
 
   return (

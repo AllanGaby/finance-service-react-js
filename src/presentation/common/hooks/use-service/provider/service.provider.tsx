@@ -1,7 +1,7 @@
 import React, { createContext, useContext, PropsWithChildren, useCallback } from 'react'
 import { ListEntityModel } from '@/domain/common'
-import { HttpMethod, HttpStatusCode } from '@/protocols/http-client'
-import { ConflictError, EntityNotFoundError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
+import { HttpMethod, HttpResponse, HttpResponseType, HttpStatusCode } from '@/protocols/http-client'
+import { ConflictError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 import {
   ServiceContextModel,
   ServiceProviderModel,
@@ -9,28 +9,39 @@ import {
   DeleteByIdServiceDTO,
   GetByIdServiceDTO,
   UpdateByIdServiceDTO,
-  ListServiceDTO
-} from '@/presentation/common/hooks'
+  ListServiceDTO,
+  DownloadServiceDTO,
+  useAuthentication,
+  useToast
+} from '@/presentation/common'
 
 const ServiceContext = createContext<ServiceContextModel>({
   create: undefined,
   deleteById: undefined,
   getById: undefined,
   list: undefined,
-  updateById: undefined
+  updateById: undefined,
+  download: undefined
 })
 
 export type ServiceProviderPropsWithChildren = PropsWithChildren<ServiceProviderModel>
 
 const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children, httpClient, mapFilterToURLParamsUseCase, baseUrl }: ServiceProviderPropsWithChildren) => {
-  const handleCreate = useCallback(async <EntityType extends Object, DTOType>(params: CreateServiceDTO<DTOType>): Promise<EntityType> => {
-    const { endPoint, data, entityName } = params
-    const response = await httpClient.request<EntityType>({
-      method: HttpMethod.post,
-      url: `${baseUrl}${endPoint}`,
-      body: data
+  const { logout } = useAuthentication()
+  const toast = useToast()
+
+  const handleAccessDenied = useCallback(async () => {
+    await logout()
+    toast.show({
+      title: 'Sessão expirada',
+      message: 'Sua sessão expirou, faça login novamente'
     })
+  }, [])
+
+  const handleGetResponse = useCallback(async <EntityType extends Object>(response: HttpResponse<EntityType>, entityName: string = 'EntityName'): Promise<EntityType> => {
     switch (response.statusCode) {
+      case HttpStatusCode.ok:
+        return response.body
       case HttpStatusCode.created:
         return response.body
       case HttpStatusCode.noContent:
@@ -39,11 +50,25 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
         throw new ConflictError(entityName)
       case HttpStatusCode.unauthorized:
         throw new UnauthorizedError(response.body)
+      case HttpStatusCode.forbidden: {
+        await handleAccessDenied()
+        return undefined
+      }
       case HttpStatusCode.unprocessableEntity:
         throw new UnprocessableEntityError(response.body)
       default:
         throw new UnexpectedError(response.body)
     }
+  }, [])
+
+  const handleCreate = useCallback(async <EntityType extends Object, DTOType>(params: CreateServiceDTO<DTOType>): Promise<EntityType> => {
+    const { endPoint, data, entityName } = params
+    const response = await httpClient.request<EntityType>({
+      method: HttpMethod.post,
+      url: `${baseUrl}${endPoint}`,
+      body: data
+    })
+    return handleGetResponse(response, entityName)
   }, [])
 
   const handleDeleteById = useCallback(async <DTOType extends Object>(params: DeleteByIdServiceDTO<DTOType>): Promise<void> => {
@@ -53,18 +78,7 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
       url: `${baseUrl}${endPoint}/${entityId}`,
       body: data
     })
-    switch (response.statusCode) {
-      case HttpStatusCode.noContent:
-        return undefined
-      case HttpStatusCode.conflict:
-        throw new ConflictError(entityName)
-      case HttpStatusCode.unauthorized:
-        throw new UnauthorizedError(response.body)
-      case HttpStatusCode.unprocessableEntity:
-        throw new UnprocessableEntityError(response.body)
-      default:
-        throw new UnexpectedError(response.body)
-    }
+    return handleGetResponse(response, entityName)
   }, [])
 
   const handleUpdateById = useCallback(async <EntityType extends Object, DTOType>(params: UpdateByIdServiceDTO<DTOType>): Promise<EntityType> => {
@@ -74,20 +88,7 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
       url: `${baseUrl}${endPoint}/${entityId}`,
       body: data
     })
-    switch (response.statusCode) {
-      case HttpStatusCode.ok:
-        return response.body
-      case HttpStatusCode.noContent:
-        return undefined
-      case HttpStatusCode.conflict:
-        throw new ConflictError(entityName)
-      case HttpStatusCode.unauthorized:
-        throw new UnauthorizedError(response.body)
-      case HttpStatusCode.unprocessableEntity:
-        throw new UnprocessableEntityError(response.body)
-      default:
-        throw new UnexpectedError(response.body)
-    }
+    return handleGetResponse(response, entityName)
   }, [])
 
   const handleList = useCallback(async <EntityType extends Object>(params: ListServiceDTO): Promise<ListEntityModel<EntityType>> => {
@@ -98,18 +99,7 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
       url: `${baseUrl}${endPoint}${urlParams}`,
       body: undefined
     })
-    switch (response.statusCode) {
-      case HttpStatusCode.ok:
-        return response.body
-      case HttpStatusCode.noContent:
-        return undefined
-      case HttpStatusCode.unauthorized:
-        throw new UnauthorizedError(response.body)
-      case HttpStatusCode.unprocessableEntity:
-        throw new UnprocessableEntityError(response.body)
-      default:
-        throw new UnexpectedError(response.body)
-    }
+    return handleGetResponse<ListEntityModel<EntityType>>(response)
   }, [])
 
   const handleGetById = useCallback(async <EntityType extends Object>(params: GetByIdServiceDTO): Promise<EntityType> => {
@@ -119,20 +109,31 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
       url: `${baseUrl}${endPoint}/${entityId}`,
       body: undefined
     })
-    switch (response.statusCode) {
-      case HttpStatusCode.ok:
-        return response.body
-      case HttpStatusCode.noContent:
-        return undefined
-      case HttpStatusCode.notFound:
-        throw new EntityNotFoundError(entityName)
-      case HttpStatusCode.unauthorized:
-        throw new UnauthorizedError(response.body)
-      case HttpStatusCode.unprocessableEntity:
-        throw new UnprocessableEntityError(response.body)
-      default:
-        throw new UnexpectedError(response.body)
+    return handleGetResponse(response, entityName)
+  }, [])
+
+  const handleDownload = useCallback(async ({
+    endPoint,
+    entityName,
+    entityId,
+    contentType
+  }: DownloadServiceDTO): Promise<void> => {
+    const entityParam = entityId ? `/${entityId}` : ''
+    const url = `${baseUrl}${endPoint}${entityParam}`
+    const response = await httpClient.request({
+      method: HttpMethod.get,
+      url,
+      body: undefined,
+      responseType: HttpResponseType.Blob
+    })
+    if (response.statusCode === HttpStatusCode.ok) {
+      const content = new Blob([response.body], {
+        type: contentType
+      })
+      window.location.href = window.URL.createObjectURL(content)
+      return
     }
+    return handleGetResponse(response, entityName)
   }, [])
 
   return (
@@ -142,7 +143,8 @@ const ServiceProvider: React.FC<ServiceProviderPropsWithChildren> = ({ children,
         updateById: handleUpdateById,
         list: handleList,
         deleteById: handleDeleteById,
-        getById: handleGetById
+        getById: handleGetById,
+        download: handleDownload
       }}>
       {children}
     </ServiceContext.Provider>

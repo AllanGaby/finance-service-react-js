@@ -1,11 +1,11 @@
 import { GetEntityByIdUseCase, EntityModel } from '@/domain/common'
-import { HttpClient, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { EntityNotFoundError, UnauthorizedError, UnexpectedError, UnprocessableEntityError } from '@/data/common/errors'
 
 export class RemoteGetEntityByIdUseCase<EntityType extends EntityModel> implements GetEntityByIdUseCase<EntityType> {
   constructor (
     protected endPoint: string,
-    private readonly httpClient: HttpClient,
+    private readonly httpClient: HttpClientProtocol,
     private readonly entityName: string
   ) {}
 

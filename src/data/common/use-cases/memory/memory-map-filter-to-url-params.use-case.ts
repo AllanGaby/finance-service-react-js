@@ -22,10 +22,10 @@ export class MemoryMapFilterToURLParamsUseCase implements MapFilterToURLParamsUs
     }
     filters?.filter(item => Boolean(item)).forEach(item => {
       const { field, conditional, value, operator } = item
-      this.addUrlParams('f', field)
-      this.addUrlParams('c', conditional)
-      this.addUrlParams('v', value?.toString())
-      this.addUrlParams('o', operator)
+      this.addUrlParams('field', field)
+      this.addUrlParams('condicional', conditional)
+      this.addUrlParams('value', value?.toString())
+      this.addUrlParams('operator', operator)
     })
     if (this.urlParams) {
       return `?${this.urlParams}`

@@ -1,11 +1,11 @@
 import { ListEntitiesUseCase, EntityModel, ListEntityModel, ListEntitiesDTO, MapFilterToURLParamsUseCase, OrderDirection } from '@/domain/common'
-import { HttpClient, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
+import { HttpClientProtocol, HttpMethod, HttpStatusCode } from '@/protocols/http-client'
 import { UnauthorizedError, UnexpectedError, UnprocessableEntityError, EntityNotFoundError } from '@/data/common/errors'
 
 export class RemoteListEntitiesUseCase<EntityType extends EntityModel> implements ListEntitiesUseCase<EntityType> {
   constructor (
     protected endPoint: string,
-    private readonly httpClient: HttpClient,
+    private readonly httpClient: HttpClientProtocol,
     private readonly mapFilterToURLParamsUseCase: MapFilterToURLParamsUseCase,
     private readonly entityName: string,
     private readonly orderDefault: string,
