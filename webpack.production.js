@@ -1,8 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const common = require('./webpack.common')
+const fs = require('fs')
 const Dotenv = require('dotenv-webpack')
 const { DefinePlugin } = require('webpack')
-const { merge } = require('webpack-merge')
 
 module.exports = async () => {
   const publicKey = await fs.promises.readFile('./public_key.pem', { encoding: 'utf-8' })
