@@ -13,7 +13,7 @@ module.exports = async () => {
     output: {
       path: path.join(__dirname, 'public'),
       filename: 'main-bundle-[fullhash].js',
-      publicPath: ''
+      publicPath: '/'
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js'],
