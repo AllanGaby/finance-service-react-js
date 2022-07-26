@@ -7,6 +7,7 @@ COPY ./package.json ./package.json
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./public_key.pem ./public_key.pem
 COPY ./webpack.production.js ./webpack.production.js
+COPY ./.env ./.env
 RUN echo $API_HOST
 RUN export BASE_URL=$API_HOST
 RUN yarn
